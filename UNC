@@ -19,7 +19,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   UNC    |   ( " .. CurrentDate .. " )   |" ,
+   Name = "   |   Akari Hub   UNC Test Executer    |" ,
    Icon = "app-window",
    LoadingTitle = "   Akari Hub  UNC   ",
 
@@ -130,7 +130,7 @@ ResultLabel:Set(
       status = "Your Executer Is So Normally  ✅"
       color = "rgb(255,215,0)"
    else
-      status = "Executer Your Noobs   →  🔴  ←"
+      status = "Executer Your Noobs Solara / Xeno   →  🔴  ←"
       color = "rgb(255,60,60)"
    end
    
