@@ -104,7 +104,7 @@ ResultLabel:Set(
    
    local status, color
    if percent >= 95 then
-      status = "Your Executer Is 100 UNC Test  👍"
+      status = "Your Executer UNC Test:  100 %   👍"
       color = "rgb(0,255,100)"
    elseif percent >= 85 then
       status = "Your Executer Is So Good  ✅"
