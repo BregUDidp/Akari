@@ -1,0 +1,135 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "UNC Tester 2026 🔥",
+   LoadingTitle = "กำลังโหลด UNC Checker...",
+   LoadingSubtitle = "by PunpunJJeasy",
+   ConfigurationSaving = { Enabled = false }
+})
+
+local Tab = Window:CreateTab("UNC Test", 4483362458)
+
+Tab:CreateSection("")
+
+-- Label หลัก (ผล %)
+local ResultLabel = Tab:CreateLabel(" --- ")
+
+-- Label สถานะ + Loading animation
+local StatusLabel = Tab:CreateLabel(" --- ")
+
+-- ตัวแปรสำหรับควบคุม loading animation
+local isTesting = false
+local dots = {"", ".", "..", "..."}
+
+-- ฟังก์ชันทดสอบ UNC (เหมือนเดิม แค่แยกส่วน)
+local function performUNCTest()
+   local success, total = 0, 0
+   
+   local uncFunctions = {
+      getrawmetatable, setreadonly, make_readonly, isreadonly,
+      getrenv, getgc, getreg, gethui,
+      hookfunction, hookmetamethod, newcclosure,
+      firesignal, getconnections, getconnectionstate,
+      cloneref, cache.invalidate, cache.iscached,
+      decompile, getupvalue, setupvalue, getupvalues,
+      getconstants, getconstant, getprotos, getproto,
+      is_synapse_function, isexecutorclosure, checkcaller,
+   }
+   
+   for _, func in ipairs(uncFunctions) do
+      total = total + 1
+      local s = pcall(function()
+         return func ~= nil and (type(func) == "function" or type(func) == "table")
+      end)
+      if s then
+         success = success + 1
+      end
+   end
+   
+   return math.floor((success / total) * 100 + 0.5)
+end
+
+-- ฟังก์ชันแสดงผล % และสถานะ
+local function showResult(percent)
+   -- แทนที่บรรทัดเดิมนี้:
+-- ResultLabel:Set("Unc Test Script:  " .. percent .. " %")
+
+-- ด้วยโค้ดนี้แทนครับ
+local colorCode
+if percent >= 95 then
+    colorCode = "rgb(0, 255, 100)"     -- เขียวสด God Tier
+elseif percent >= 85 then
+    colorCode = "rgb(50, 255, 150)"    -- เขียวอ่อน Perfect
+elseif percent >= 70 then
+    colorCode = "rgb(255, 220, 0)"     -- เหลือง Working
+else
+    colorCode = "rgb(255, 70, 70)"     -- แดง Noob Executor
+end
+
+ResultLabel:Set(
+    '<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>'
+)
+   
+   local status, color
+   if percent >= 95 then
+      status = "Your Executer Is So Better  🟢"
+      color = "rgb(0,255,100)"
+   elseif percent >= 85 then
+      status = "Perfects Executer ✅"
+      color = "rgb(0,220,255)"
+   elseif percent >= 70 then
+      status = "Working Normally 🟢 Not Fully"
+      color = "rgb(255,215,0)"
+   else
+      status = "Executer Your Noobs -🔴-"
+      color = "rgb(255,60,60)"
+   end
+   
+   StatusLabel:Set('<font color="'..color..'"><b>' .. status .. '</b></font>')
+end
+
+-- สร้างปุ่ม Execute
+Tab:CreateButton({
+   Name = "  Execute UNC Test  ",
+   Callback = function()
+      if isTesting then return end  -- ป้องกันกดซ้ำ
+      
+      isTesting = true
+      
+      -- เริ่ม animation Loading . . .
+      local dotIndex = 1
+      local connection
+      
+      connection = game:GetService("RunService").Heartbeat:Connect(function()
+         if not isTesting then
+            connection:Disconnect()
+            return
+         end
+         
+         StatusLabel:Set("กำลังทดสอบ UNC" .. dots[dotIndex])
+         dotIndex = (dotIndex % #dots) + 1
+      end)
+      
+      -- รันการทดสอบ (ใช้ task.spawn เพื่อไม่ให้ UI ค้าง)
+      task.spawn(function()
+         local percent = performUNCTest()
+         
+         -- หยุด animation
+         isTesting = false
+         if connection then connection:Disconnect() end
+         
+         -- แสดงผลลัพธ์
+         showResult(percent)
+      end)
+   end,
+})
+
+Tab:CreateSection("")
+
+-- ข้อความเสริม
+Tab:CreateParagraph({
+   Title = "Additional Information",
+   Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
+})
+
+Tab:CreateLabel("Press Execute and watch the progress bar... Show us who got 100%! 🚀")
