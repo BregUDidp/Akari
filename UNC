@@ -1,21 +1,70 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+local function GetThaiDate()
+    local monthsThai = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    }
+    
+    local time = os.date("*t")
+    local day = time.day
+    local month = monthsThai[time.month]
+    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    
+    return day .. " " .. month .. " " .. year
+end
+
+local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
+
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "UNC Tester 2026 🔥",
-   LoadingTitle = "กำลังโหลด UNC Checker...",
-   LoadingSubtitle = "by PunpunJJeasy",
-   ConfigurationSaving = { Enabled = false }
+   Name = "   |   Akari Hub   UNC    |   ( " .. CurrentDate .. " )   |" ,
+   Icon = "app-window",
+   LoadingTitle = "   Akari Hub  UNC   ",
+
+   LoadingSubtitle = "",
+   
+   ShowText = " 🌑 ",
+   Theme = "Default",
+   ToggleUIKeybind = "G",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "akari"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🌑"}
+   }
 })
 
-local Tab = Window:CreateTab("UNC Test", 4483362458)
+local Tab = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
+
+Tab:CreateSection("")
+
+local Label = Tab:CreateLabel(" Launching Executer", "play")
 
 Tab:CreateSection("")
 
 -- Label หลัก (ผล %)
-local ResultLabel = Tab:CreateLabel(" --- ")
+local ResultLabel = Tab:CreateLabel("  ---  ")
 
 -- Label สถานะ + Loading animation
-local StatusLabel = Tab:CreateLabel(" --- ")
+local StatusLabel = Tab:CreateLabel("  ---  ")
 
 -- ตัวแปรสำหรับควบคุม loading animation
 local isTesting = false
@@ -72,13 +121,13 @@ ResultLabel:Set(
    
    local status, color
    if percent >= 95 then
-      status = "Your Executer Is So Better  🟢"
+      status = "Your Executer Is 100 UNC Test  👍"
       color = "rgb(0,255,100)"
    elseif percent >= 85 then
-      status = "Perfects Executer ✅"
+      status = "Your Executer Is So Good  ✅"
       color = "rgb(0,220,255)"
    elseif percent >= 70 then
-      status = "Working Normally 🟢 Not Fully"
+      status = "Your Executer Is So Normally  ✅"
       color = "rgb(255,215,0)"
    else
       status = "Executer Your Noobs   →  🔴  ←"
@@ -86,6 +135,12 @@ ResultLabel:Set(
    end
    
    StatusLabel:Set('<font color="'..color..'"><b>' .. status .. '</b></font>')
+
+   -- หายไปหลัง 5 วินาที
+   task.delay(5, function()
+      ResultLabel:Set("  ---  ")  -- ทำให้ Label ว่าง (หายไป)
+      StatusLabel:Set("  ---  ")
+   end)
 end
 
 -- สร้างปุ่ม Execute
@@ -133,3 +188,5 @@ Tab:CreateParagraph({
 })
 
 Tab:CreateLabel("Press Execute and watch the progress bar... Show us who got 100%! 🚀")
+
+Tab:CreateSection("")
