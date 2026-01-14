@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   UNC Test Executer    |" ,
+   Name = "   |   Akari Hub   |   UNC Test Executer    |" ,
    Icon = "app-window",
    LoadingTitle = "   Akari Hub  UNC   ",
 
@@ -170,6 +170,6 @@ Tab:CreateParagraph({
    Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
 })
 
-Tab:CreateLabel("Press Execute and watch the progress bar... Show us who got 100%! 🚀")
+Tab:CreateLabel("Press Execute and Watch The Progress Bar Show Us Who Got 100%   👍")
 
 Tab:CreateSection("")
