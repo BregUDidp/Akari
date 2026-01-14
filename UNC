@@ -81,7 +81,7 @@ ResultLabel:Set(
       status = "Working Normally 🟢 Not Fully"
       color = "rgb(255,215,0)"
    else
-      status = "Executer Your Noobs -🔴-"
+      status = "Executer Your Noobs   →  🔴  ←"
       color = "rgb(255,60,60)"
    end
    
