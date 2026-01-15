@@ -128,7 +128,7 @@ end
 
 -- สร้างปุ่ม Execute
 Tab:CreateButton({
-   Name = "  Execute UNC Test  ",
+   Name = "                                                                        ▶️",
    Callback = function()
       if isTesting then return end  -- ป้องกันกดซ้ำ
       
