@@ -1,13 +1,10 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   UNC Test Executer    |" ,
    Icon = "app-window",
    LoadingTitle = "   Akari Hub  UNC   ",
-
    LoadingSubtitle = "",
-   
    ShowText = " 🌑 ",
    Theme = "Default",
    ToggleUIKeybind = "G",
@@ -18,21 +15,7 @@ local Window = Rayfield:CreateWindow({
       FolderName = nil,
       FileName = "akari"
    },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-   KeySystem = false,
-   KeySettings = {
-      Title = "",
-      Subtitle = "",
-      Note = "",
-      FileName = "",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"🌑"}
-   }
+   KeySystem = false
 })
 
 local Tab = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
@@ -46,14 +29,16 @@ Tab:CreateSection("")
 -- Label หลัก (ผล %)
 local ResultLabel = Tab:CreateLabel("  ---  ")
 
--- Label สถานะ + Loading animation
+-- Label สถานะ
 local StatusLabel = Tab:CreateLabel("  ---  ")
 
--- ตัวแปรสำหรับควบคุม loading animation
+-- Label ใหม่: Undetected / Detected
+local DetectLabel = Tab:CreateLabel("  ---  ")
+
+-- ตัวแปร loading
 local isTesting = false
 local dots = {"", ".", "..", "..."}
 
--- ฟังก์ชันทดสอบ UNC (เหมือนเดิม แค่แยกส่วน)
 local function performUNCTest()
    local success, total = 0, 0
    
@@ -73,90 +58,80 @@ local function performUNCTest()
       local s = pcall(function()
          return func ~= nil and (type(func) == "function" or type(func) == "table")
       end)
-      if s then
-         success = success + 1
-      end
+      if s then success = success + 1 end
    end
    
    return math.floor((success / total) * 100 + 0.5)
 end
 
--- ฟังก์ชันแสดงผล % และสถานะ
 local function showResult(percent)
-   -- แทนที่บรรทัดเดิมนี้:
--- ResultLabel:Set("Unc Test Script:  " .. percent .. " %")
+   -- สีสำหรับ %
+   local colorCode = percent >= 95 and "rgb(0, 255, 100)" or
+                     percent >= 85 and "rgb(50, 255, 150)" or
+                     percent >= 70 and "rgb(255, 220, 0)" or
+                     "rgb(255, 70, 70)"
 
--- ด้วยโค้ดนี้แทนครับ
-local colorCode
-if percent >= 95 then
-    colorCode = "rgb(0, 255, 100)"     -- เขียวสด God Tier
-elseif percent >= 85 then
-    colorCode = "rgb(50, 255, 150)"    -- เขียวอ่อน Perfect
-elseif percent >= 70 then
-    colorCode = "rgb(255, 220, 0)"     -- เหลือง Working
-else
-    colorCode = "rgb(255, 70, 70)"     -- แดง Noob Executor
-end
-
-ResultLabel:Set(
-    '<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>'
-)
+   ResultLabel:Set(
+      '<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>'
+   )
    
-   local status, color
+   -- สถานะ
+   local statusText, statusColor
    if percent >= 95 then
-      status = "Your Executer UNC Test:  100 %   👍"
-      color = "rgb(0,255,100)"
+      statusText = "Your Executer UNC Test:  100 %   👍"
+      statusColor = "rgb(0,255,100)"
    elseif percent >= 85 then
-      status = "Your Executer Is So Good  ✅"
-      color = "rgb(0,220,255)"
+      statusText = "Your Executer Is So Good  ✅"
+      statusColor = "rgb(0,220,255)"
    elseif percent >= 70 then
-      status = "Your Executer Is So Normally  ✅"
-      color = "rgb(255,215,0)"
+      statusText = "Your Executer Is So Normally  ✅"
+      statusColor = "rgb(255,215,0)"
    else
-      status = "Executer Your Noobs  ( Solara - Xeno )   →   🔴   ←"
-      color = "rgb(255,60,60)"
+      statusText = "Executer Your Noobs  (  Solara - Xeno  )    →      💥   ←"
+      statusColor = "rgb(255,60,60)"
    end
    
-   StatusLabel:Set('<font color="'..color..'"><b>' .. status .. '</b></font>')
+   StatusLabel:Set('<font color="'..statusColor..'"><b>' .. statusText .. '</b></font>')
 
-   -- หายไปหลัง 5 วินาที
+   -- Label Undetected / Detected (ใหม่!)
+   if percent >= 99 then
+      DetectLabel:Set('<font color="rgb(0,255,120)"><b>Undetected  100 %   👍</b></font>')
+   else
+      DetectLabel:Set('<font color="rgb(255,80,80)"><b>Detected  100 %   💥</b></font>')
+   end
+
+   -- หายไปทั้ง 3 Label หลัง 5 วินาที
    task.delay(5, function()
-      ResultLabel:Set("  ---  ")  -- ทำให้ Label ว่าง (หายไป)
+      ResultLabel:Set("  ---  ")
       StatusLabel:Set("  ---  ")
+      DetectLabel:Set("  ---  ")
    end)
 end
 
--- สร้างปุ่ม Execute
 Tab:CreateButton({
-   Name = "                                                                        ▶️",
+   Name = "                                                                       ▶️",
    Callback = function()
-      if isTesting then return end  -- ป้องกันกดซ้ำ
+      if isTesting then return end
       
       isTesting = true
       
-      -- เริ่ม animation Loading . . .
       local dotIndex = 1
-      local connection
-      
-      connection = game:GetService("RunService").Heartbeat:Connect(function()
+      local connection = game:GetService("RunService").Heartbeat:Connect(function()
          if not isTesting then
             connection:Disconnect()
             return
          end
          
-         StatusLabel:Set("กำลังทดสอบ UNC" .. dots[dotIndex])
+         StatusLabel:Set("Checking UNC" .. dots[dotIndex])
          dotIndex = (dotIndex % #dots) + 1
       end)
       
-      -- รันการทดสอบ (ใช้ task.spawn เพื่อไม่ให้ UI ค้าง)
       task.spawn(function()
          local percent = performUNCTest()
          
-         -- หยุด animation
          isTesting = false
          if connection then connection:Disconnect() end
          
-         -- แสดงผลลัพธ์
          showResult(percent)
       end)
    end,
@@ -170,6 +145,6 @@ Tab:CreateParagraph({
    Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
 })
 
-Tab:CreateLabel("Press Execute and watch the progress bar... Show us who got 100%! 🚀")
+Tab:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 % 👍")
 
 Tab:CreateSection("")
