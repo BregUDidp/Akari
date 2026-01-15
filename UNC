@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   UNC Test Executer    |" ,
+   Name = "   |   Akari Hub   |    UNC Test Executer    |" ,
    Icon = "app-window",
    LoadingTitle = "   Akari Hub  UNC   ",
    LoadingSubtitle = "",
@@ -19,11 +19,6 @@ local Window = Rayfield:CreateWindow({
 })
 
 local Tab = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
-
-Tab:CreateSection("")
-
-local Label = Tab:CreateLabel(" Launching Executer", "play")
-
 Tab:CreateSection("")
 
 -- Label หลัก (ผล %)
@@ -72,22 +67,22 @@ local function showResult(percent)
                      "rgb(255, 70, 70)"
 
    ResultLabel:Set(
-      '<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>'
+      '<font color="' .. colorCode .. '"><b>UNC Test Executer:  ' .. percent .. ' %</b></font>'
    )
    
    -- สถานะ
    local statusText, statusColor
    if percent >= 95 then
-      statusText = "Your Executer UNC Test:  100 %   👍"
+      statusText = "Your Executer UNC Test:  100 %"
       statusColor = "rgb(0,255,100)"
    elseif percent >= 85 then
-      statusText = "Your Executer Is So Good  ✅"
+      statusText = "Your Executer Is So Good"
       statusColor = "rgb(0,220,255)"
    elseif percent >= 70 then
-      statusText = "Your Executer Is So Normally  ✅"
+      statusText = "Your Executer Is So Normally"
       statusColor = "rgb(255,215,0)"
    else
-      statusText = "Executer Your Noobs  (  Solara - Xeno  )    →      💥   ←"
+      statusText = "Executer Your Noobs  (   Solara - Xeno   )    →      💥      ←"
       statusColor = "rgb(255,60,60)"
    end
    
@@ -95,21 +90,23 @@ local function showResult(percent)
 
    -- Label Undetected / Detected (ใหม่!)
    if percent >= 99 then
-      DetectLabel:Set('<font color="rgb(0,255,120)"><b>Undetected  100 %   👍</b></font>')
+      DetectLabel:Set('<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>')
    else
-      DetectLabel:Set('<font color="rgb(255,80,80)"><b>Detected  100 %   💥</b></font>')
+      DetectLabel:Set('<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
    end
 
-   -- หายไปทั้ง 3 Label หลัง 5 วินาที
-   task.delay(5, function()
+   -- หายไปทั้ง 3 Label หลัง 7 วินาที
+   task.delay(7, function()
       ResultLabel:Set("  ---  ")
       StatusLabel:Set("  ---  ")
       DetectLabel:Set("  ---  ")
    end)
 end
 
+Tab:CreateSection("")
+
 Tab:CreateButton({
-   Name = "                                                                       ▶️",
+   Name = "                                                                      ▶️",
    Callback = function()
       if isTesting then return end
       
@@ -145,6 +142,6 @@ Tab:CreateParagraph({
    Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
 })
 
-Tab:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 % 👍")
+Tab:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
 
 Tab:CreateSection("")
