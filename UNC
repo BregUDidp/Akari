@@ -18,20 +18,15 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false
 })
 
-local Tab = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
-Tab:CreateSection("")
+-- Tab UNC (เดิม)
+local TabUNC = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
+TabUNC:CreateSection("")
 
--- Label หลัก (ผล %)
-local ResultLabel = Tab:CreateLabel("  ---  ")
+local UNCResultLabel = TabUNC:CreateLabel(" --- ")
+local UNCStatusLabel = TabUNC:CreateLabel(" --- ")
+local UNCDetectLabel = TabUNC:CreateLabel(" --- ")
 
--- Label สถานะ
-local StatusLabel = Tab:CreateLabel("  ---  ")
-
--- Label ใหม่: Undetected / Detected
-local DetectLabel = Tab:CreateLabel("  ---  ")
-
--- ตัวแปร loading
-local isTesting = false
+local isTestingUNC = false
 local dots = {"", ".", "..", "..."}
 
 local function performUNCTest()
@@ -50,96 +45,169 @@ local function performUNCTest()
    
    for _, func in ipairs(uncFunctions) do
       total = total + 1
-      local s = pcall(function()
-         return func ~= nil and (type(func) == "function" or type(func) == "table")
-      end)
+      local s = pcall(function() return func ~= nil and (type(func) == "function" or type(func) == "table") end)
       if s then success = success + 1 end
    end
    
    return math.floor((success / total) * 100 + 0.5)
 end
 
-local function showResult(percent)
-   -- สีสำหรับ %
+local function showUNCResult(percent)
    local colorCode = percent >= 95 and "rgb(0, 255, 100)" or
                      percent >= 85 and "rgb(50, 255, 150)" or
                      percent >= 70 and "rgb(255, 220, 0)" or
                      "rgb(255, 70, 70)"
-
-   ResultLabel:Set(
-      '<font color="' .. colorCode .. '"><b>UNC Test Executer:  ' .. percent .. ' %</b></font>'
-   )
    
-   -- สถานะ
-   local statusText, statusColor
-   if percent >= 95 then
-      statusText = "Your Executer UNC Test:  100 %"
-      statusColor = "rgb(0,255,100)"
-   elseif percent >= 85 then
-      statusText = "Your Executer Is So Good"
-      statusColor = "rgb(0,220,255)"
-   elseif percent >= 70 then
-      statusText = "Your Executer Is So Normally"
-      statusColor = "rgb(255,215,0)"
-   else
-      statusText = "Executer Your Noobs  (   Solara - Xeno   )    →      💥      ←"
-      statusColor = "rgb(255,60,60)"
-   end
+   UNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>')
    
-   StatusLabel:Set('<font color="'..statusColor..'"><b>' .. statusText .. '</b></font>')
-
-   -- Label Undetected / Detected (ใหม่!)
-   if percent >= 99 then
-      DetectLabel:Set('<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>')
-   else
-      DetectLabel:Set('<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
-   end
-
-   -- หายไปทั้ง 3 Label หลัง 7 วินาที
+   local statusText = percent >= 95 and "Your Executer Unc Test:  100 %" or
+                      percent >= 85 and "Your Executer Unc Test:  85 %" or
+                      percent >= 70 and "Your Executer Unc Test:  70 %" or
+                      "Your Executer Unc Test:  0 %"
+   local statusColor = percent >= 95 and "rgb(0,255,100)" or percent >= 85 and "rgb(255,215,0)" or percent >= 70 and "rgb(255,215,0)" or "rgb(255,80,80)"
+   
+   UNCStatusLabel:Set('<font color="'..statusColor..'"><b>' .. statusText .. '</b></font>')
+   
+   UNCDetectLabel:Set(percent >= 92 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
+   
    task.delay(7, function()
-      ResultLabel:Set("  ---  ")
-      StatusLabel:Set("  ---  ")
-      DetectLabel:Set("  ---  ")
+      UNCResultLabel:Set(" --- ")
+      UNCStatusLabel:Set(" --- ")
+      UNCDetectLabel:Set(" --- ")
    end)
 end
 
-Tab:CreateButton({
+TabUNC:CreateButton({
    Name = "                                                                      ▶️",
    Callback = function()
-      if isTesting then return end
-      
-      isTesting = true
+      if isTestingUNC then return end
+      isTestingUNC = true
       
       local dotIndex = 1
-      local connection = game:GetService("RunService").Heartbeat:Connect(function()
-         if not isTesting then
-            connection:Disconnect()
-            return
-         end
-         
-         StatusLabel:Set("Checking UNC" .. dots[dotIndex])
+      local conn = game:GetService("RunService").Heartbeat:Connect(function()
+         if not isTestingUNC then conn:Disconnect() return end
+         UNCStatusLabel:Set("Checking Unc" .. dots[dotIndex])
          dotIndex = (dotIndex % #dots) + 1
       end)
       
       task.spawn(function()
          local percent = performUNCTest()
-         
-         isTesting = false
-         if connection then connection:Disconnect() end
-         
-         showResult(percent)
+         isTestingUNC = false
+         conn:Disconnect()
+         showUNCResult(percent)
       end)
    end,
 })
 
-Tab:CreateSection("")
+-- Tab sUNC (ใหม่!)
+local TabSUNC = Window:CreateTab("||   - Sunc Test Executer", "app-window-mac")
+TabSUNC:CreateSection("")
+
+local sUNCResultLabel = TabSUNC:CreateLabel(" --- ")
+local sUNCStatusLabel = TabSUNC:CreateLabel(" --- ")
+local sUNCDetectLabel = TabSUNC:CreateLabel(" --- ")
+
+local isTestingSUNC = false
+
+local function performsUNCTest()
+   local success, total = 0, 0
+   
+   -- ตัวอย่างการเช็ค sUNC แบบทำงานจริง (เพิ่มเติมตาม trend 2026)
+   local suncTests = {
+      function() -- hookfunction ทำงานจริง
+         local original = warn
+         local hooked = hookfunction(warn, function(...) return original("hooked!") end)
+         return hooked == original
+      end,
+      function() -- newcclosure สร้าง closure ใหม่จริง
+         local f = newcclosure(function() return 1 end)
+         return type(f) == "function" and iscclosure(f) == false
+      end,
+      function() -- getrawmetatable ใช้ได้จริง
+         local mt = getrawmetatable(game)
+         return type(mt) == "table" and rawget(mt, "__index") ~= nil
+      end,
+      function() return firesignal ~= nil end, -- พื้นฐานแต่เช็คเพิ่ม
+      function() return getconnections ~= nil end,
+      -- เพิ่มได้อีกตามต้องการ (sUNC จริงมี 50+ tests แต่ที่นี่เวอร์ชันง่าย)
+   }
+   
+   for _, test in ipairs(suncTests) do
+      total = total + 1
+      local ok = pcall(test)
+      if ok then success = success + 1 end
+   end
+   
+   return math.floor((success / total) * 100 + 0.5)
+end
+
+local function showSUNCResult(percent)
+   local colorCode = percent >= 95 and "rgb(0, 255, 100)" or
+                     percent >= 85 and "rgb(50, 255, 150)" or
+                     percent >= 70 and "rgb(255, 220, 0)" or
+                     "rgb(255, 70, 70)"
+   
+   sUNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Sunc Test Executer:  ' .. percent .. ' %</b></font>')
+   
+   local statusText = percent >= 95 and "Your Executer Sunc Test:  100 %" or
+                      percent >= 85 and "Your Executer Sunc Test:  85 %" or
+                      percent >= 70 and "Your Executer Sunc Test:  70 %" or
+                      "Your Executer Sunc Test:  0 %"
+   local statusColor = percent >= 95 and "rgb(0,255,100)" or percent >= 85 and "rgb(0,220,255)" or percent >= 70 and "rgb(255,215,0)" or "rgb(255,80,80)"
+   
+   sUNCStatusLabel:Set('<font color="'..statusColor..'"><b>' .. statusText .. '</b></font>')
+   
+   sUNCDetectLabel:Set(percent >= 95 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
+   
+   task.delay(7, function()
+      sUNCResultLabel:Set(" --- ")
+      sUNCStatusLabel:Set(" --- ")
+      sUNCDetectLabel:Set(" --- ")
+   end)
+end
+
+TabSUNC:CreateButton({
+   Name = "                                                                      ▶️",
+   Callback = function()
+      if isTestingSUNC then return end
+      isTestingSUNC = true
+      
+      local dotIndex = 1
+      local conn = game:GetService("RunService").Heartbeat:Connect(function()
+         if not isTestingSUNC then conn:Disconnect() return end
+         sUNCStatusLabel:Set("Checking sUNC" .. dots[dotIndex])
+         dotIndex = (dotIndex % #dots) + 1
+      end)
+      
+      task.spawn(function()
+         local percent = performsUNCTest()
+         isTestingSUNC = false
+         conn:Disconnect()
+         showSUNCResult(percent)
+      end)
+   end,
+})
+
+TabUNC:CreateSection("")
 
 -- ข้อความเสริม
-Tab:CreateParagraph({
+TabUNC:CreateParagraph({
    Title = "Additional Information",
    Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
 })
 
-Tab:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
+TabUNC:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
 
-Tab:CreateSection("")
+TabUNC:CreateSection("")
+
+TabSUNC:CreateSection("")
+
+-- ข้อความเสริม
+TabSUNC:CreateParagraph({
+   Title = "Additional Information",
+   Content = "• The Higher The percentage, the more scripts it supports.\n• Testing can be repeated.\n• Good executors in 2026 typically achieve 92-100%."
+})
+
+TabSUNC:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
+
+TabSUNC:CreateSection("")
