@@ -103,8 +103,6 @@ local function showResult(percent)
    end)
 end
 
-Tab:CreateSection("")
-
 Tab:CreateButton({
    Name = "                                                                      ▶️",
    Callback = function()
