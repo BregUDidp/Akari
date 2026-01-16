@@ -114,6 +114,10 @@ local RejoinCountdownLabel = TabUNC:CreateLabel(
    '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
 )
 
+local ServerHopStatusLabel = TabUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
 TabUNC:CreateButton({
    Name = "                                                                      🕰️",
    Callback = function()
@@ -155,6 +159,109 @@ TabUNC:CreateButton({
             end)
          end
       end)
+   end,
+})
+
+TabUNC:CreateButton({
+   Name = "                                                                      🧭",
+   Callback = function()
+      -- อัปเดต Label เป็นสีเหลือง - เริ่มทำงาน
+      ServerHopStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Looking For Check Server</b></font>'
+      )
+
+      local PlaceID = game.PlaceId
+      local AllIDs = {}
+      local foundAnything = ""
+      local actualHour = os.date("!*t").hour
+      local Deleted = false
+
+      -- โหลดไฟล์เก่า
+      local File = pcall(function()
+         AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+      end)
+
+      if not File then
+         table.insert(AllIDs, actualHour)
+         writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+      end
+
+      local function TPReturner()
+         local Site
+         if foundAnything == "" then
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+         else
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+         end
+
+         local ID = ""
+         if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+            foundAnything = Site.nextPageCursor
+         end
+
+         local num = 0
+         for i, v in pairs(Site.data) do
+            local Possible = true
+            ID = tostring(v.id)
+
+            if tonumber(v.maxPlayers) > tonumber(v.playing) then
+               for _, Existing in pairs(AllIDs) do
+                  if num ~= 0 then
+                     if ID == tostring(Existing) then
+                        Possible = false
+                     end
+                  else
+                     if tonumber(actualHour) ~= tonumber(Existing) then
+                        pcall(function()
+                           delfile("NotSameServers.json")
+                           AllIDs = {}
+                           table.insert(AllIDs, actualHour)
+                        end)
+                     end
+                  end
+                  num = num + 1
+               end
+
+               if Possible then
+                  table.insert(AllIDs, ID)
+                  wait()
+                  pcall(function()
+                     writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                     wait()
+                     game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                  end)
+                  
+                  -- ถ้าเทเลพอร์ตสำเร็จ (ถึงตรงนี้ถือว่าสำเร็จก่อนโดนเตะ)
+                  ServerHopStatusLabel:Set(
+                     '<font color="rgb(0, 255, 100)"><b>Sever Hop Random Map Finish</b></font>'
+                  )
+                  
+                  wait(4)
+                  return -- หยุดลูปถ้าพบแล้ว
+               end
+            end
+         end
+      end
+
+      local function Teleport()
+         while wait() do
+            pcall(function()
+               TPReturner()
+               if foundAnything ~= "" then
+                  TPReturner()
+               end
+            end)
+            
+            -- ถ้ายังไม่พบหลังจากพยายามหลายรอบ
+            wait(2)
+            ServerHopStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>No New Servers Are Available Right Now... Please Rry Again.</b></font>'
+            )
+         end
+      end
+
+      -- เริ่มกระบวนการ Hop
+      task.spawn(Teleport)
    end,
 })
 
@@ -262,6 +369,10 @@ local RejoinCountdownLabel = TabSUNC:CreateLabel(
    '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
 )
 
+local ServerHopStatusLabel = TabSUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
 TabSUNC:CreateButton({
    Name = "                                                                      🕰️",
    Callback = function()
@@ -306,7 +417,108 @@ TabSUNC:CreateButton({
    end,
 })
 
-TabUNC:CreateSection("")
+TabSUNC:CreateButton({
+   Name = "                                                                      🧭",
+   Callback = function()
+      -- อัปเดต Label เป็นสีเหลือง - เริ่มทำงาน
+      ServerHopStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Looking For Check Server</b></font>'
+      )
+
+      local PlaceID = game.PlaceId
+      local AllIDs = {}
+      local foundAnything = ""
+      local actualHour = os.date("!*t").hour
+      local Deleted = false
+
+      -- โหลดไฟล์เก่า
+      local File = pcall(function()
+         AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+      end)
+
+      if not File then
+         table.insert(AllIDs, actualHour)
+         writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+      end
+
+      local function TPReturner()
+         local Site
+         if foundAnything == "" then
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+         else
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+         end
+
+         local ID = ""
+         if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+            foundAnything = Site.nextPageCursor
+         end
+
+         local num = 0
+         for i, v in pairs(Site.data) do
+            local Possible = true
+            ID = tostring(v.id)
+
+            if tonumber(v.maxPlayers) > tonumber(v.playing) then
+               for _, Existing in pairs(AllIDs) do
+                  if num ~= 0 then
+                     if ID == tostring(Existing) then
+                        Possible = false
+                     end
+                  else
+                     if tonumber(actualHour) ~= tonumber(Existing) then
+                        pcall(function()
+                           delfile("NotSameServers.json")
+                           AllIDs = {}
+                           table.insert(AllIDs, actualHour)
+                        end)
+                     end
+                  end
+                  num = num + 1
+               end
+
+               if Possible then
+                  table.insert(AllIDs, ID)
+                  wait()
+                  pcall(function()
+                     writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                     wait()
+                     game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                  end)
+                  
+                  -- ถ้าเทเลพอร์ตสำเร็จ (ถึงตรงนี้ถือว่าสำเร็จก่อนโดนเตะ)
+                  ServerHopStatusLabel:Set(
+                     '<font color="rgb(0, 255, 100)"><b>Sever Hop Random Map Finish</b></font>'
+                  )
+                  
+                  wait(4)
+                  return -- หยุดลูปถ้าพบแล้ว
+               end
+            end
+         end
+      end
+
+      local function Teleport()
+         while wait() do
+            pcall(function()
+               TPReturner()
+               if foundAnything ~= "" then
+                  TPReturner()
+               end
+            end)
+            
+            -- ถ้ายังไม่พบหลังจากพยายามหลายรอบ
+            wait(2)
+            ServerHopStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>No New Servers Are Available Right Now... Please Rry Again.</b></font>'
+            )
+         end
+      end
+
+      -- เริ่มกระบวนการ Hop
+      task.spawn(Teleport)
+   end,
+})
 
 -- ข้อความเสริม
 TabUNC:CreateParagraph({
