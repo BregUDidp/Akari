@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
-      FileName = "akari"
+      FileName = "Akari"
    },
    KeySystem = false
 })
@@ -22,9 +22,17 @@ local Window = Rayfield:CreateWindow({
 local TabUNC = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
 TabUNC:CreateSection("")
 
-local UNCResultLabel = TabUNC:CreateLabel(" --- ")
-local UNCStatusLabel = TabUNC:CreateLabel(" --- ")
-local UNCDetectLabel = TabUNC:CreateLabel(" --- ")
+local UNCResultLabel = TabUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+local UNCStatusLabel = TabUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+local UNCDetectLabel = TabUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
 
 local isTestingUNC = false
 local dots = {"", ".", "..", "..."}
@@ -71,9 +79,9 @@ local function showUNCResult(percent)
    UNCDetectLabel:Set(percent >= 92 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
    
    task.delay(7, function()
-      UNCResultLabel:Set(" --- ")
-      UNCStatusLabel:Set(" --- ")
-      UNCDetectLabel:Set(" --- ")
+      UNCResultLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
+      UNCStatusLabel:Set('<font color="rgb(0, 255, 120)"><b> --- </b></font>')
+      UNCDetectLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
    end)
 end
 
@@ -99,13 +107,72 @@ TabUNC:CreateButton({
    end,
 })
 
+TabUNC:CreateSection("")
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = TabUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+TabUNC:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
+      end)
+   end,
+})
+
 -- Tab sUNC (ใหม่!)
 local TabSUNC = Window:CreateTab("||   - Sunc Test Executer", "app-window-mac")
 TabSUNC:CreateSection("")
 
-local sUNCResultLabel = TabSUNC:CreateLabel(" --- ")
-local sUNCStatusLabel = TabSUNC:CreateLabel(" --- ")
-local sUNCDetectLabel = TabSUNC:CreateLabel(" --- ")
+local sUNCResultLabel = TabSUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+local sUNCStatusLabel = TabSUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+local sUNCDetectLabel = TabSUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
 
 local isTestingSUNC = false
 
@@ -160,9 +227,9 @@ local function showSUNCResult(percent)
    sUNCDetectLabel:Set(percent >= 95 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
    
    task.delay(7, function()
-      sUNCResultLabel:Set(" --- ")
-      sUNCStatusLabel:Set(" --- ")
-      sUNCDetectLabel:Set(" --- ")
+      sUNCResultLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
+      sUNCStatusLabel:Set('<font color="rgb(0, 255, 120)"><b> --- </b></font>')
+      sUNCDetectLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
    end)
 end
 
@@ -184,6 +251,57 @@ TabSUNC:CreateButton({
          isTestingSUNC = false
          conn:Disconnect()
          showSUNCResult(percent)
+      end)
+   end,
+})
+
+TabSUNC:CreateSection("")
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = TabSUNC:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+TabSUNC:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
       end)
    end,
 })
