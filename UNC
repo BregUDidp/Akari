@@ -265,6 +265,8 @@ TabUNC:CreateButton({
    end,
 })
 
+TabUNC:CreateSection("")
+
 -- Tab sUNC (ใหม่!)
 local TabSUNC = Window:CreateTab("||   - Sunc Test Executer", "app-window-mac")
 TabSUNC:CreateSection("")
