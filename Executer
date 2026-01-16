@@ -86,42 +86,6 @@ ExecuteTab:CreateButton({
    end,
 })
 
-ExecuteTab:CreateButton({
-   Name = "                                                                      📋",
-   Callback = function()
-      local clipboardText = ""
-      
-      -- ดึงข้อความจาก Clipboard
-      local success, err = pcall(function()
-         clipboardText = getclipboard() or ""
-      end)
-      
-      if not success or clipboardText == "" or clipboardText:match("^%s*$") then
-         
-         return
-      end
-      
-      -- ใส่ข้อความจาก Clipboard ลงในช่อง Input
-      Input:Set(clipboardText)
-      CurrentScript = clipboardText
-      
-      
-      
-      -- รันโค้ดทันที (เหมือนกด Execute)
-      task.spawn(function()
-         local runSuccess, runError = pcall(function()
-            loadstring(clipboardText)()
-         end)
-         
-         if runSuccess then
-            
-         else
-            
-         end
-      end)
-   end,
-})
-
 ExecuteTab:CreateSection("")
 
 -- ข้อความเสริม
