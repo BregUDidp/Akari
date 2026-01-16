@@ -58,11 +58,11 @@ local function showUNCResult(percent)
                      percent >= 70 and "rgb(255, 220, 0)" or
                      "rgb(255, 70, 70)"
    
-   UNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Unc Test Executer:  ' .. percent .. ' %</b></font>')
+   UNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Your Unc Test Executer:  ' .. percent .. ' %</b></font>')
    
-   local statusText = percent >= 95 and "Your Executer Unc Test:  100 %" or
-                      percent >= 85 and "Your Executer Unc Test:  85 %" or
-                      percent >= 70 and "Your Executer Unc Test:  70 %" or
+   local statusText = percent >= 95 and "Unc Test Executer Rate:  100 %" or
+                      percent >= 85 and "Unc Test Executer Rate:  85 %" or
+                      percent >= 70 and "Unc Test Executer Rate:  70 %" or
                       "Your Executer Unc Test:  0 %"
    local statusColor = percent >= 95 and "rgb(0,255,100)" or percent >= 85 and "rgb(255,215,0)" or percent >= 70 and "rgb(255,215,0)" or "rgb(255,80,80)"
    
@@ -147,11 +147,11 @@ local function showSUNCResult(percent)
                      percent >= 70 and "rgb(255, 220, 0)" or
                      "rgb(255, 70, 70)"
    
-   sUNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Sunc Test Executer:  ' .. percent .. ' %</b></font>')
+   sUNCResultLabel:Set('<font color="' .. colorCode .. '"><b>Your Sunc Test Executer:  ' .. percent .. ' %</b></font>')
    
-   local statusText = percent >= 95 and "Your Executer Sunc Test:  100 %" or
-                      percent >= 85 and "Your Executer Sunc Test:  85 %" or
-                      percent >= 70 and "Your Executer Sunc Test:  70 %" or
+   local statusText = percent >= 95 and "Sunc Test Executer Rate:  100 %" or
+                      percent >= 85 and "Sunc Test Executer Rate:  85 %" or
+                      percent >= 70 and "Sunc Test Executer Rate:  70 %" or
                       "Your Executer Sunc Test:  0 %"
    local statusColor = percent >= 95 and "rgb(0,255,100)" or percent >= 85 and "rgb(0,220,255)" or percent >= 70 and "rgb(255,215,0)" or "rgb(255,80,80)"
    
