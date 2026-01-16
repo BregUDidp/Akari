@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |    UNC Test Executer    |" ,
-   Icon = "app-window",
+   Icon = "webhook",
    LoadingTitle = "   Akari Hub  UNC   ",
    LoadingSubtitle = "",
    ShowText = " 🌑 ",
@@ -305,86 +305,6 @@ TabSUNC:CreateButton({
       end)
    end,
 })
-
-local ExecuteTab = Window:CreateTab("||   - Executer Script", "play") -- Title, Image
-
-ExecuteTab:CreateSection("")
-ExecuteTab:CreateSection("Paste Your Script Here")
-ExecuteTab:CreateSection("")
-
--- ตัวแปรเก็บโค้ดที่ผู้ใช้พิมพ์
-local CurrentScript = ""
-
-local Input = ExecuteTab:CreateInput({
-   Name = "Code Script Anything Input",
-   PlaceholderText = "✏️  100 % UNC Executed",
-   RemoveTextAfterFocusLost = false,  -- เก็บข้อความไว้หลังออกโฟกัส
-   Callback = function(Text)
-      CurrentScript = Text  -- อัปเดตค่าทุกครั้งที่ข้อความเปลี่ยน
-   end
-})
-
-ExecuteTab:CreateSection("")
-
-ExecuteTab:CreateButton({
-   Name = "                                                                      ▶️",
-   Callback = function()
-      local scriptCode = CurrentScript
-      
-      if scriptCode == "" or scriptCode:match("^%s*$") then
-         Rayfield:Notify({
-            Title = "Error Execute Script ⚠️",
-            Content = "Please enter the code before pressing Execute!",
-            Duration = 1,
-            Image = "play",
-         })
-         return
-      end
-      
-      
-      
-      -- รันโค้ดแบบปลอดภัย
-      task.spawn(function()
-         local success, errorMsg = pcall(function()
-            loadstring(scriptCode)()
-         end)
-         
-         if success then
-            
-         else
-            
-         end
-      end)
-   end,
-})
-
--- ปุ่ม Clear (ใหม่!)
-ExecuteTab:CreateButton({
-   Name = "                                                                      ❌",
-   Callback = function()
-      CurrentScript = ""           -- ล้างตัวแปร
-      Input:Set("")                 -- ล้างข้อความในช่อง Input (Rayfield มี method Set สำหรับ Input)
-      
-      Rayfield:Notify({
-         Title = "Cleared Script",
-         Content = "The script channel has been successfully cleared.",
-         Duration = 1,
-         Image = "brush-cleaning",
-      })
-   end,
-})
-
-ExecuteTab:CreateSection("")
-
--- ข้อความเสริม
-ExecuteTab:CreateParagraph({
-   Title = "Advice",
-   Content = "• Paste your Lua code here.\n• Press CLEAR to clear the field before starting again.\n• If you encounter an error, please refer to the message above."
-})
-
-ExecuteTab:CreateLabel("Press EXECUTE and let me know if the script worked! 🚀")
-
-ExecuteTab:CreateSection("")
 
 TabUNC:CreateSection("")
 
