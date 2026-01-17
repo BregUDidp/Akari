@@ -23,15 +23,15 @@ local TabUNC = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
 TabUNC:CreateSection("")
 
 local UNCResultLabel = TabUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local UNCStatusLabel = TabUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local UNCDetectLabel = TabUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local isTestingUNC = false
@@ -79,9 +79,9 @@ local function showUNCResult(percent)
    UNCDetectLabel:Set(percent >= 92 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
    
    task.delay(7, function()
-      UNCResultLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
-      UNCStatusLabel:Set('<font color="rgb(0, 255, 120)"><b> --- </b></font>')
-      UNCDetectLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
+      UNCResultLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
+      UNCStatusLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
+      UNCDetectLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
    end)
 end
 
@@ -111,11 +111,11 @@ TabUNC:CreateSection("")
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = TabUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local ServerHopStatusLabel = TabUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 TabUNC:CreateButton({
@@ -272,15 +272,15 @@ local TabSUNC = Window:CreateTab("||   - Sunc Test Executer", "app-window-mac")
 TabSUNC:CreateSection("")
 
 local sUNCResultLabel = TabSUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local sUNCStatusLabel = TabSUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local sUNCDetectLabel = TabSUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local isTestingSUNC = false
@@ -336,9 +336,9 @@ local function showSUNCResult(percent)
    sUNCDetectLabel:Set(percent >= 95 and '<font color="rgb(0,255,120)"><b>Undetected Executer  100 %</b></font>' or '<font color="rgb(255,80,80)"><b>Detected Executer  100 %</b></font>')
    
    task.delay(7, function()
-      sUNCResultLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
-      sUNCStatusLabel:Set('<font color="rgb(0, 255, 120)"><b> --- </b></font>')
-      sUNCDetectLabel:Set('<font color="rgb(0, 255, 100)"><b> --- </b></font>')
+      sUNCResultLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
+      sUNCStatusLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
+      sUNCDetectLabel:Set('<font color="rgb(138, 43, 179)"><b> --- </b></font>')
    end)
 end
 
@@ -368,11 +368,11 @@ TabSUNC:CreateSection("")
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = TabSUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local ServerHopStatusLabel = TabSUNC:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 TabSUNC:CreateButton({
