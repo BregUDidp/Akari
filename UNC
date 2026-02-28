@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |    UNC Test Executer    |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  UNC   ",
+   LoadingTitle = "   Akari Hub  UNC - SUNC   ",
    LoadingSubtitle = "",
    ShowText = " 🌑 ",
    Theme = "Default",
@@ -20,7 +20,7 @@ local Window = Rayfield:CreateWindow({
 
 -- Tab UNC (เดิม)
 local TabUNC = Window:CreateTab("||   - Unc Test Executer", "app-window-mac")
-TabUNC:CreateSection("")
+local Divider = TabUNC:CreateDivider()
 
 local UNCResultLabel = TabUNC:CreateLabel(
    '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
@@ -107,7 +107,7 @@ TabUNC:CreateButton({
    end,
 })
 
-TabUNC:CreateSection("")
+local Divider = TabUNC:CreateDivider()
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = TabUNC:CreateLabel(
@@ -265,11 +265,11 @@ TabUNC:CreateButton({
    end,
 })
 
-TabUNC:CreateSection("")
+local Divider = TabUNC:CreateDivider()
 
 -- Tab sUNC (ใหม่!)
 local TabSUNC = Window:CreateTab("||   - Sunc Test Executer", "app-window-mac")
-TabSUNC:CreateSection("")
+local Divider = TabSUNC:CreateDivider()
 
 local sUNCResultLabel = TabSUNC:CreateLabel(
    '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
@@ -364,7 +364,7 @@ TabSUNC:CreateButton({
    end,
 })
 
-TabSUNC:CreateSection("")
+local Divider = TabSUNC:CreateDivider()
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = TabSUNC:CreateLabel(
@@ -530,9 +530,9 @@ TabUNC:CreateParagraph({
 
 TabUNC:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
 
-TabUNC:CreateSection("")
+local Divider = TabUNC:CreateDivider()
 
-TabSUNC:CreateSection("")
+local Divider = TabSUNC:CreateDivider()
 
 -- ข้อความเสริม
 TabSUNC:CreateParagraph({
@@ -542,4 +542,4 @@ TabSUNC:CreateParagraph({
 
 TabSUNC:CreateLabel("Press Execute And Watch The Progress Bar... Show Us Who Got 100 %")
 
-TabSUNC:CreateSection("")
+local Divider = TabSUNC:CreateDivider()
