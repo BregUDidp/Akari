@@ -20,9 +20,9 @@ local Window = Rayfield:CreateWindow({
 
 local ExecuteTab = Window:CreateTab("||   - Executer Script", "play") -- Title, Image
 
-ExecuteTab:CreateSection("")
+local Divider = ExecuteTab:CreateDivider()
 ExecuteTab:CreateSection("Paste Your Script Here")
-ExecuteTab:CreateSection("")
+local Divider = ExecuteTab:CreateDivider()
 
 -- ตัวแปรเก็บโค้ดที่ผู้ใช้พิมพ์
 local CurrentScript = ""
@@ -36,7 +36,7 @@ local Input = ExecuteTab:CreateInput({
    end
 })
 
-ExecuteTab:CreateSection("")
+local Divider = ExecuteTab:CreateDivider()
 
 ExecuteTab:CreateButton({
    Name = "                                                                      ▶️",
@@ -86,7 +86,7 @@ ExecuteTab:CreateButton({
    end,
 })
 
-ExecuteTab:CreateSection("")
+local Divider = ExecuteTab:CreateDivider()
 
 -- ข้อความเสริม
 ExecuteTab:CreateParagraph({
@@ -96,4 +96,4 @@ ExecuteTab:CreateParagraph({
 
 ExecuteTab:CreateLabel("Press EXECUTE and let me know if the script worked! 🚀")
 
-ExecuteTab:CreateSection("")
+local Divider = ExecuteTab:CreateDivider()
