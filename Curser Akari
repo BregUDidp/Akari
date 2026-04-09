@@ -1,0 +1,299 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Visual state storage
+local visualState = {
+    time = 0,
+    rotationProgress = 0,
+    currentRotationSpeed = 0.8,
+    smoothedRotation = 5,
+    -- Lines params
+    lines = {
+        top = {Size = UDim2.new(0, 3, 0, 25), Position = UDim2.new(0.5, -1.5, 0, 0)},
+        bottom = {Size = UDim2.new(0, 3, 0, 25), Position = UDim2.new(0.5, -1.5, 1, -25)},
+        left = {Size = UDim2.new(0, 25, 0, 3), Position = UDim2.new(0, 0, 0.5, -1.5)},
+        right = {Size = UDim2.new(0, 25, 0, 3), Position = UDim2.new(1, -25, 0.5, -1.5)},
+    },
+    -- Text params
+    text = {
+        Text = "Akari.win",
+        Position = UDim2.new(0, 0, 0, 0),
+        Font = Enum.Font.Arcade,
+        TextScaled = true,
+    }
+}
+
+local screenGui
+local aimContainer
+local topLine, bottomLine, leftLine, rightLine
+local textLabel
+
+local lineThickness = 3
+local baseRotationSpeed = 0.8
+local pulseSpeed = 2.5
+local minLength = -10
+local maxLength = -30
+
+local time = 0
+local rotationProgress = 0
+local currentRotationSpeed = baseRotationSpeed
+local smoothedRotation = 5
+
+-- สีม่วงหลัก
+local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
+
+-- Highlight variables
+local currentHighlight = nil
+local lastTargetPlayer = nil
+
+-- Helper to create line
+local function createLine(parent, size, position)
+    local frame = Instance.new("Frame")
+    frame.Size = size
+    frame.Position = position
+    frame.BackgroundColor3 = PURPLE_COLOR
+    frame.BorderSizePixel = 0
+    frame.ZIndex = 5
+    frame.Parent = parent
+
+    local stroke = Instance.new("UIStroke")
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Color = Color3.new(0,0,0)
+    stroke.Thickness = 1
+    stroke.Parent = frame
+
+    return frame
+end
+
+-- Helper to create text with outline
+local function createTextLabel(parent, text, position, font, scaled)
+    local label = Instance.new("TextLabel")
+    label.Text = text
+    label.Position = position
+    label.TextColor3 = PURPLE_COLOR
+    label.Font = font
+    label.TextScaled = scaled
+    label.BackgroundTransparency = 1
+    label.Size = UDim2.new(0, 150, 0, 23)
+    label.ZIndex = 10
+    label.Parent = parent
+
+    local stroke = Instance.new("UIStroke")
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    stroke.Color = Color3.new(0,0,0)
+    stroke.Thickness = 1
+    stroke.LineJoinMode = Enum.LineJoinMode.Round
+    stroke.Parent = label
+
+    return label
+end
+
+-- Clear previous GUI
+local function clearGui()
+    if screenGui then
+        screenGui:Destroy()
+        screenGui = nil
+    end
+end
+
+-- Create GUI elements
+local function createGui()
+    clearGui()
+
+    screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "AimSightGUI"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = player:WaitForChild("PlayerGui")
+
+    aimContainer = Instance.new("Frame")
+    aimContainer.BackgroundTransparency = 1
+    aimContainer.Size = UDim2.new(0, 25, 0, 25)
+    aimContainer.AnchorPoint = Vector2.new(0.5, 0.5)
+    aimContainer.Parent = screenGui
+
+    topLine = createLine(aimContainer, visualState.lines.top.Size, visualState.lines.top.Position)
+    bottomLine = createLine(aimContainer, visualState.lines.bottom.Size, visualState.lines.bottom.Position)
+    leftLine = createLine(aimContainer, visualState.lines.left.Size, visualState.lines.left.Position)
+    rightLine = createLine(aimContainer, visualState.lines.right.Size, visualState.lines.right.Position)
+
+    textLabel = createTextLabel(screenGui, visualState.text.Text, visualState.text.Position, visualState.text.Font, visualState.text.TextScaled)
+end
+
+-- Save visual state
+local function saveVisualState()
+    visualState.time = time
+    visualState.rotationProgress = rotationProgress
+    visualState.currentRotationSpeed = currentRotationSpeed
+    visualState.smoothedRotation = smoothedRotation
+
+    visualState.lines.top.Size = topLine.Size
+    visualState.lines.top.Position = topLine.Position
+    visualState.lines.bottom.Size = bottomLine.Size
+    visualState.lines.bottom.Position = bottomLine.Position
+    visualState.lines.left.Size = leftLine.Size
+    visualState.lines.left.Position = leftLine.Position
+    visualState.lines.right.Size = rightLine.Size
+    visualState.lines.right.Position = rightLine.Position
+
+    visualState.text.Text = textLabel.Text
+    visualState.text.Position = textLabel.Position
+end
+
+-- Restore visual state
+local function restoreVisualState()
+    if not (topLine and bottomLine and leftLine and rightLine and textLabel) then return end
+
+    time = visualState.time or 0
+    rotationProgress = visualState.rotationProgress or 0
+    currentRotationSpeed = visualState.currentRotationSpeed or baseRotationSpeed
+    smoothedRotation = visualState.smoothedRotation or 5
+
+    topLine.Size = visualState.lines.top.Size or topLine.Size
+    topLine.Position = visualState.lines.top.Position or topLine.Position
+    bottomLine.Size = visualState.lines.bottom.Size or bottomLine.Size
+    bottomLine.Position = visualState.lines.bottom.Position or bottomLine.Position
+    leftLine.Size = visualState.lines.left.Size or leftLine.Size
+    leftLine.Position = visualState.lines.left.Position or leftLine.Position
+    rightLine.Size = visualState.lines.right.Size or rightLine.Size
+    rightLine.Position = visualState.lines.right.Position or rightLine.Position
+
+    textLabel.Text = visualState.text.Text or textLabel.Text
+    textLabel.Position = visualState.text.Position or textLabel.Position
+end
+
+-- ฟังก์ชันสร้าง/อัพเดท Highlight (สีม่วง)
+local function updateHighlight(targetPlayer)
+    if targetPlayer == lastTargetPlayer then
+        return
+    end
+
+    -- ลบ Highlight เก่า
+    if currentHighlight then
+        currentHighlight:Destroy()
+        currentHighlight = nil
+    end
+
+    lastTargetPlayer = targetPlayer
+
+    if targetPlayer and targetPlayer.Character then
+        local character = targetPlayer.Character
+        local highlight = Instance.new("Highlight")
+        highlight.Name = "AimHighlight"
+        highlight.Adornee = character
+        highlight.FillColor = PURPLE_COLOR
+        highlight.OutlineColor = PURPLE_COLOR
+        highlight.FillTransparency = 0.7
+        highlight.OutlineTransparency = 0
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Parent = character
+
+        currentHighlight = highlight
+    end
+end
+
+-- Rotation + Pulse functions
+local function calculateRotationSpeed(progress)
+    local slowdownStart = 0.6
+    local slowdownDuration = 0.35
+    local minSlowdownSpeed = 0.3
+    local baseRotationSpeedLocal = baseRotationSpeed
+
+    if progress >= slowdownStart then
+        local slowdownProgress = (progress - slowdownStart) / slowdownDuration
+        local easedProgress = slowdownProgress * slowdownProgress
+        local slowdownFactor = 1 - (easedProgress * (1 - minSlowdownSpeed))
+        return baseRotationSpeedLocal * math.max(slowdownFactor, minSlowdownSpeed)
+    else
+        return baseRotationSpeedLocal
+    end
+end
+
+local function smoothRotation(currentRot, targetRot, smoothing)
+    return currentRot + (targetRot - currentRot) * smoothing
+end
+
+local function smoothPulse(t, speed)
+    local rawPulse = math.sin(t * speed) * 0.5 + 0.5
+    return rawPulse * rawPulse
+end
+
+-- On character added
+local function onCharacterAdded(character)
+    createGui()
+    restoreVisualState()
+
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.Died:Connect(function()
+        saveVisualState()
+    end)
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+
+-- Animation + Highlight loop
+RunService.RenderStepped:Connect(function(deltaTime)
+    if not (aimContainer and topLine and bottomLine and leftLine and rightLine and textLabel) then
+        return
+    end
+
+    time = time + deltaTime
+
+    -- ตำแหน่งตามเมาส์
+    aimContainer.Position = UDim2.new(0, mouse.X, 0, mouse.Y)
+    textLabel.Position = UDim2.new(0, mouse.X - 70, 0, mouse.Y + 50)
+
+    -- หมุนวงเล็ง
+    rotationProgress = (rotationProgress + currentRotationSpeed * deltaTime) % 1
+    currentRotationSpeed = calculateRotationSpeed(rotationProgress)
+
+    local targetRotation = rotationProgress * 360
+    smoothedRotation = smoothRotation(smoothedRotation, targetRotation, 1)
+    aimContainer.Rotation = smoothedRotation
+
+    -- Pulse (ยืด-หด)
+    local pulse = smoothPulse(time, pulseSpeed)
+    local currentLength = minLength + (maxLength - minLength) * pulse
+
+    topLine.Size = UDim2.new(0, lineThickness, 0, currentLength)
+    bottomLine.Size = UDim2.new(0, lineThickness, 0, currentLength)
+    leftLine.Size = UDim2.new(0, currentLength, 0, lineThickness)
+    rightLine.Size = UDim2.new(0, currentLength, 0, lineThickness)
+
+    topLine.Position = UDim2.new(0.5, -lineThickness / 2, 0, 0)
+    bottomLine.Position = UDim2.new(0.5, -lineThickness / 2, 1, -currentLength)
+    leftLine.Position = UDim2.new(0, 0, 0.5, -lineThickness / 2)
+    rightLine.Position = UDim2.new(1, -currentLength, 0.5, -lineThickness / 2)
+
+    -- สีม่วงคงที่
+    local purpleColor = PURPLE_COLOR
+    topLine.BackgroundColor3 = purpleColor
+    bottomLine.BackgroundColor3 = purpleColor
+    leftLine.BackgroundColor3 = purpleColor
+    rightLine.BackgroundColor3 = purpleColor
+    textLabel.TextColor3 = purpleColor
+
+    -- === Highlight คนที่ชี้อยู่ ===
+    local target = mouse.Target
+    local targetPlayer = nil
+
+    if target then
+        local character = target:FindFirstAncestorWhichIsA("Model")
+        if character then
+            targetPlayer = Players:GetPlayerFromCharacter(character)
+        end
+    end
+
+    -- ถ้าไม่ใช่ตัวเราเอง
+    if targetPlayer == player then
+        targetPlayer = nil
+    end
+
+    updateHighlight(targetPlayer)
+end)
