@@ -10,16 +10,16 @@ local visualState = {
     rotationProgress = 0,
     currentRotationSpeed = 0.8,
     smoothedRotation = 5,
-    -- Lines params
+    -- Lines params (ปรับให้ใหญ่ขึ้น)
     lines = {
-        top = {Size = UDim2.new(0, 3, 0, 25), Position = UDim2.new(0.5, -1.5, 0, 0)},
-        bottom = {Size = UDim2.new(0, 3, 0, 25), Position = UDim2.new(0.5, -1.5, 1, -25)},
-        left = {Size = UDim2.new(0, 25, 0, 3), Position = UDim2.new(0, 0, 0.5, -1.5)},
-        right = {Size = UDim2.new(0, 25, 0, 3), Position = UDim2.new(1, -25, 0.5, -1.5)},
+        top = {Size = UDim2.new(0, 4, 0, 40), Position = UDim2.new(0.5, -2, 0, 0)},
+        bottom = {Size = UDim2.new(0, 4, 0, 40), Position = UDim2.new(0.5, -2, 1, -40)},
+        left = {Size = UDim2.new(0, 40, 0, 4), Position = UDim2.new(0, 0, 0.5, -2)},
+        right = {Size = UDim2.new(0, 40, 0, 4), Position = UDim2.new(1, -40, 0.5, -2)},
     },
     -- Text params
     text = {
-        Text = "Akari.win",
+        Text = "Akari.Xyz",
         Position = UDim2.new(0, 0, 0, 0),
         Font = Enum.Font.Arcade,
         TextScaled = true,
@@ -31,11 +31,11 @@ local aimContainer
 local topLine, bottomLine, leftLine, rightLine
 local textLabel
 
-local lineThickness = 3
-local baseRotationSpeed = 0.8
-local pulseSpeed = 2.5
-local minLength = -10
-local maxLength = -30
+local lineThickness = 4          -- หนาขึ้น
+local baseRotationSpeed = 1.2    -- ความเร็วหมุน Crosshair
+local pulseSpeed = 2.3           -- ปรับให้ pulse นุ่มขึ้นนิดหน่อย
+local minLength = -15
+local maxLength = -45            -- ยาวขึ้น
 
 local time = 0
 local rotationProgress = 0
@@ -49,7 +49,7 @@ local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
 local currentHighlight = nil
 local lastTargetPlayer = nil
 
--- Helper to create line
+-- Helper functions
 local function createLine(parent, size, position)
     local frame = Instance.new("Frame")
     frame.Size = size
@@ -62,13 +62,12 @@ local function createLine(parent, size, position)
     local stroke = Instance.new("UIStroke")
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     stroke.Color = Color3.new(0,0,0)
-    stroke.Thickness = 1
+    stroke.Thickness = 1.2
     stroke.Parent = frame
 
     return frame
 end
 
--- Helper to create text with outline
 local function createTextLabel(parent, text, position, font, scaled)
     local label = Instance.new("TextLabel")
     label.Text = text
@@ -77,7 +76,7 @@ local function createTextLabel(parent, text, position, font, scaled)
     label.Font = font
     label.TextScaled = scaled
     label.BackgroundTransparency = 1
-    label.Size = UDim2.new(0, 150, 0, 23)
+    label.Size = UDim2.new(0, 150, 0, 23)   -- ขนาดข้อความเท่าเดิม
     label.ZIndex = 10
     label.Parent = parent
 
@@ -91,15 +90,13 @@ local function createTextLabel(parent, text, position, font, scaled)
     return label
 end
 
--- Clear previous GUI
 local function clearGui()
-    if screenGui then
-        screenGui:Destroy()
-        screenGui = nil
+    if screenGui then 
+        screenGui:Destroy() 
+        screenGui = nil 
     end
 end
 
--- Create GUI elements
 local function createGui()
     clearGui()
 
@@ -110,7 +107,7 @@ local function createGui()
 
     aimContainer = Instance.new("Frame")
     aimContainer.BackgroundTransparency = 1
-    aimContainer.Size = UDim2.new(0, 25, 0, 25)
+    aimContainer.Size = UDim2.new(0, 45, 0, 45)   -- ขยาย container ให้รองรับ Crosshair ที่ใหญ่ขึ้น
     aimContainer.AnchorPoint = Vector2.new(0.5, 0.5)
     aimContainer.Parent = screenGui
 
@@ -122,7 +119,6 @@ local function createGui()
     textLabel = createTextLabel(screenGui, visualState.text.Text, visualState.text.Position, visualState.text.Font, visualState.text.TextScaled)
 end
 
--- Save visual state
 local function saveVisualState()
     visualState.time = time
     visualState.rotationProgress = rotationProgress
@@ -142,7 +138,6 @@ local function saveVisualState()
     visualState.text.Position = textLabel.Position
 end
 
--- Restore visual state
 local function restoreVisualState()
     if not (topLine and bottomLine and leftLine and rightLine and textLabel) then return end
 
@@ -164,13 +159,10 @@ local function restoreVisualState()
     textLabel.Position = visualState.text.Position or textLabel.Position
 end
 
--- ฟังก์ชันสร้าง/อัพเดท Highlight (สีม่วง)
+-- Highlight Function
 local function updateHighlight(targetPlayer)
-    if targetPlayer == lastTargetPlayer then
-        return
-    end
+    if targetPlayer == lastTargetPlayer then return end
 
-    -- ลบ Highlight เก่า
     if currentHighlight then
         currentHighlight:Destroy()
         currentHighlight = nil
@@ -179,35 +171,32 @@ local function updateHighlight(targetPlayer)
     lastTargetPlayer = targetPlayer
 
     if targetPlayer and targetPlayer.Character then
-        local character = targetPlayer.Character
         local highlight = Instance.new("Highlight")
         highlight.Name = "AimHighlight"
-        highlight.Adornee = character
+        highlight.Adornee = targetPlayer.Character
         highlight.FillColor = PURPLE_COLOR
         highlight.OutlineColor = PURPLE_COLOR
         highlight.FillTransparency = 0.7
         highlight.OutlineTransparency = 0
         highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        highlight.Parent = character
+        highlight.Parent = targetPlayer.Character
 
         currentHighlight = highlight
     end
 end
 
--- Rotation + Pulse functions
 local function calculateRotationSpeed(progress)
     local slowdownStart = 0.6
     local slowdownDuration = 0.35
     local minSlowdownSpeed = 0.3
-    local baseRotationSpeedLocal = baseRotationSpeed
 
     if progress >= slowdownStart then
         local slowdownProgress = (progress - slowdownStart) / slowdownDuration
         local easedProgress = slowdownProgress * slowdownProgress
         local slowdownFactor = 1 - (easedProgress * (1 - minSlowdownSpeed))
-        return baseRotationSpeedLocal * math.max(slowdownFactor, minSlowdownSpeed)
+        return baseRotationSpeed * math.max(slowdownFactor, minSlowdownSpeed)
     else
-        return baseRotationSpeedLocal
+        return baseRotationSpeed
     end
 end
 
@@ -220,7 +209,7 @@ local function smoothPulse(t, speed)
     return rawPulse * rawPulse
 end
 
--- On character added
+-- Character Setup
 local function onCharacterAdded(character)
     createGui()
     restoreVisualState()
@@ -232,12 +221,11 @@ local function onCharacterAdded(character)
 end
 
 player.CharacterAdded:Connect(onCharacterAdded)
-
 if player.Character then
     onCharacterAdded(player.Character)
 end
 
--- Animation + Highlight loop
+-- Main Loop
 RunService.RenderStepped:Connect(function(deltaTime)
     if not (aimContainer and topLine and bottomLine and leftLine and rightLine and textLabel) then
         return
@@ -245,11 +233,9 @@ RunService.RenderStepped:Connect(function(deltaTime)
 
     time = time + deltaTime
 
-    -- ตำแหน่งตามเมาส์
     aimContainer.Position = UDim2.new(0, mouse.X, 0, mouse.Y)
-    textLabel.Position = UDim2.new(0, mouse.X - 70, 0, mouse.Y + 50)
 
-    -- หมุนวงเล็ง
+    -- Crosshair หมุน
     rotationProgress = (rotationProgress + currentRotationSpeed * deltaTime) % 1
     currentRotationSpeed = calculateRotationSpeed(rotationProgress)
 
@@ -257,7 +243,7 @@ RunService.RenderStepped:Connect(function(deltaTime)
     smoothedRotation = smoothRotation(smoothedRotation, targetRotation, 1)
     aimContainer.Rotation = smoothedRotation
 
-    -- Pulse (ยืด-หด)
+    -- Pulse (ยืด-หด) — ใหญ่ขึ้น
     local pulse = smoothPulse(time, pulseSpeed)
     local currentLength = minLength + (maxLength - minLength) * pulse
 
@@ -271,15 +257,21 @@ RunService.RenderStepped:Connect(function(deltaTime)
     leftLine.Position = UDim2.new(0, 0, 0.5, -lineThickness / 2)
     rightLine.Position = UDim2.new(1, -currentLength, 0.5, -lineThickness / 2)
 
-    -- สีม่วงคงที่
+    -- สีม่วง
     local purpleColor = PURPLE_COLOR
     topLine.BackgroundColor3 = purpleColor
     bottomLine.BackgroundColor3 = purpleColor
     leftLine.BackgroundColor3 = purpleColor
     rightLine.BackgroundColor3 = purpleColor
+
+    -- ข้อความ Akari.Xyz เอียงขึ้น-ลง
+    local tiltAngle = math.sin(time * 2.8) * 12
+    textLabel.Rotation = tiltAngle
+    textLabel.Position = UDim2.new(0, mouse.X - 75, 0, mouse.Y + 55)
+
     textLabel.TextColor3 = purpleColor
 
-    -- === Highlight คนที่ชี้อยู่ ===
+    -- Highlight
     local target = mouse.Target
     local targetPlayer = nil
 
@@ -290,7 +282,6 @@ RunService.RenderStepped:Connect(function(deltaTime)
         end
     end
 
-    -- ถ้าไม่ใช่ตัวเราเอง
     if targetPlayer == player then
         targetPlayer = nil
     end
