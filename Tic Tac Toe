@@ -1,0 +1,333 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TicTacToeGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 520, 0, 680)
+mainFrame.Position = UDim2.new(0.5, -260, 0.5, -340)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 20)
+
+-- Title Bar (Draggable)
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 60)
+titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 20)
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -70, 1, 0)
+titleLabel.Position = UDim2.new(0, 20, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Tic Tac Toe"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = titleBar
+
+-- Close Button (X)
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 50, 0, 50)
+closeButton.Position = UDim2.new(1, -55, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = titleBar
+Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0, 12)
+
+-- Board Frame
+local boardFrame = Instance.new("Frame")
+boardFrame.Size = UDim2.new(0, 400, 0, 400)
+boardFrame.Position = UDim2.new(0.5, -200, 0, 90)
+boardFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+boardFrame.BorderSizePixel = 0
+boardFrame.Parent = mainFrame
+
+Instance.new("UICorner", boardFrame).CornerRadius = UDim.new(0, 15)
+
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 120, 0, 120)
+gridLayout.CellPadding = UDim2.new(0, 10, 0, 10)
+gridLayout.Parent = boardFrame
+
+-- Status Label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -40, 0, 50)
+statusLabel.Position = UDim2.new(0, 20, 0, 515)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "You Are X • You Go First!"
+statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.GothamSemibold
+statusLabel.Parent = mainFrame
+
+-- Reset Button
+local resetButton = Instance.new("TextButton")
+resetButton.Size = UDim2.new(0, 150, 0, 50)
+resetButton.Position = UDim2.new(0.5, -160, 0, 575)
+resetButton.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+resetButton.Text = "🔄 Replays"
+resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetButton.TextScaled = true
+resetButton.Font = Enum.Font.GothamBold
+resetButton.Parent = mainFrame
+Instance.new("UICorner", resetButton).CornerRadius = UDim.new(0, 12)
+
+-- Player Wins Button
+local playerWinButton = Instance.new("TextButton")
+playerWinButton.Size = UDim2.new(0, 150, 0, 50)
+playerWinButton.Position = UDim2.new(0.5, 10, 0, 575)
+playerWinButton.BackgroundColor3 = Color3.fromRGB(80, 255, 80)
+playerWinButton.Text = "🏆 Player Wins"
+playerWinButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+playerWinButton.TextScaled = true
+playerWinButton.Font = Enum.Font.GothamBold
+playerWinButton.Parent = mainFrame
+Instance.new("UICorner", playerWinButton).CornerRadius = UDim.new(0, 12)
+
+-- ================== Game Variables ==================
+local board = {0,0,0,0,0,0,0,0,0}
+local buttons = {}
+local gameOver = false
+local currentPlayer = 1  -- 1 = Player (X), 2 = AI (O)
+
+local winningCombos = {{1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7}}
+
+local function checkWin(player)
+	for _, combo in ipairs(winningCombos) do
+		if board[combo[1]] == player and board[combo[2]] == player and board[combo[3]] == player then
+			return true
+		end
+	end
+	return false
+end
+
+local function isDraw()
+	for i = 1, 9 do
+		if board[i] == 0 then return false end
+	end
+	return true
+end
+
+local function updateBoardUI()
+	for i = 1, 9 do
+		local btn = buttons[i]
+		if board[i] == 1 then
+			btn.Text = "❌"
+			btn.TextColor3 = Color3.fromRGB(255, 80, 80)
+			btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+		elseif board[i] == 2 then
+			btn.Text = "⭕"
+			btn.TextColor3 = Color3.fromRGB(80, 200, 255)
+			btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+		else
+			btn.Text = ""
+			btn.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+		end
+	end
+end
+
+local function resetGame()
+	board = {0,0,0,0,0,0,0,0,0}
+	gameOver = false
+	currentPlayer = 1
+	updateBoardUI()
+	statusLabel.Text = "You Are X • You Go First!"
+	statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+end
+
+local function endGame(winner)
+	gameOver = true
+	
+	if winner == 1 then
+		statusLabel.Text = "( 🎉 Player Win! 🎉 )"
+		statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+	elseif winner == 2 then
+		statusLabel.Text = "( 🤖 AI Wins... )"
+		statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+	else
+		statusLabel.Text = "( 🤝 It's a Draw! )"
+		statusLabel.TextColor3 = Color3.fromRGB(255, 220, 100)
+	end
+	
+	task.delay(2.5, resetGame)
+end
+
+-- Minimax AI
+local function minimax(newBoard, isMaximizing)
+	if checkWin(2) then return 10 end
+	if checkWin(1) then return -10 end
+	if isDraw() then return 0 end
+	
+	if isMaximizing then
+		local best = -math.huge
+		for i = 1, 9 do
+			if newBoard[i] == 0 then
+				newBoard[i] = 2
+				best = math.max(best, minimax(newBoard, false))
+				newBoard[i] = 0
+			end
+		end
+		return best
+	else
+		local best = math.huge
+		for i = 1, 9 do
+			if newBoard[i] == 0 then
+				newBoard[i] = 1
+				best = math.min(best, minimax(newBoard, true))
+				newBoard[i] = 0
+			end
+		end
+		return best
+	end
+end
+
+local function getBestMove()
+	local bestScore = -math.huge
+	local bestMove = nil
+	for i = 1, 9 do
+		if board[i] == 0 then
+			board[i] = 2
+			local score = minimax(board, false)
+			board[i] = 0
+			if score > bestScore then
+				bestScore = score
+				bestMove = i
+			end
+		end
+	end
+	return bestMove
+end
+
+function makeMove(position, player)
+	board[position] = player
+	updateBoardUI()
+	
+	if checkWin(player) then 
+		endGame(player) 
+		return 
+	end
+	if isDraw() then 
+		endGame(0) 
+		return 
+	end
+	
+	currentPlayer = (player == 1) and 2 or 1
+	
+	if currentPlayer == 2 then
+		statusLabel.Text = "AI is thinking..."
+		statusLabel.TextColor3 = Color3.fromRGB(150, 150, 255)
+		task.wait(0.5)
+		local aiMove = getBestMove()
+		if aiMove then 
+			makeMove(aiMove, 2) 
+		end
+	else
+		statusLabel.Text = "Your Turn! ( X )"
+		statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+	end
+end
+
+-- Create 9 cells
+for i = 1, 9 do
+	local btn = Instance.new("TextButton")
+	btn.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+	btn.Text = ""
+	btn.TextScaled = true
+	btn.Font = Enum.Font.GothamBold
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Parent = boardFrame
+	
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+	
+	btn.MouseButton1Click:Connect(function()
+		if gameOver or board[i] ~= 0 or currentPlayer ~= 1 then return end
+		makeMove(i, 1)
+	end)
+	
+	buttons[i] = btn
+end
+
+-- Player Wins Button (Force Player Win)
+playerWinButton.MouseButton1Click:Connect(function()
+	if gameOver then return end
+	
+	-- Force player to win
+	for i = 1, 9 do
+		if board[i] == 0 then
+			makeMove(i, 1)
+			if checkWin(1) then
+				endGame(1)
+				return
+			end
+			break
+		end
+	end
+	
+	-- If still not win, keep placing until win
+	while not checkWin(1) and not isDraw() do
+		for i = 1, 9 do
+			if board[i] == 0 then
+				board[i] = 1
+				updateBoardUI()
+				if checkWin(1) then
+					endGame(1)
+					return
+				end
+				break
+			end
+		end
+	end
+end)
+
+-- Drag UI
+local dragging = false
+local dragStart, startPos
+
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+
+titleBar.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+
+-- Close Button
+closeButton.MouseButton1Click:Connect(function()
+	screenGui.Enabled = false
+end)
+
+-- Reset Button
+resetButton.MouseButton1Click:Connect(resetGame)
+
+-- Start Game
+resetGame()
