@@ -18,7 +18,7 @@ mainFrame.Active = true
 mainFrame.Parent = screenGui
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 20)
 
--- Title Bar
+-- Title Bar (ใช้ลากเลื่อน UI)
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 60)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
@@ -47,6 +47,43 @@ closeButton.Font = Enum.Font.GothamBold
 closeButton.Parent = titleBar
 Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0, 12)
 
+-- ================== ทำให้ลากเลื่อนได้ ==================
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function updateInput(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+titleBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+		
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+titleBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input == dragInput then
+		updateInput(input)
+	end
+end)
+
 -- ================== Difficulty Selector ==================
 local diffFrame = Instance.new("Frame")
 diffFrame.Size = UDim2.new(0, 400, 0, 50)
@@ -56,13 +93,21 @@ diffFrame.Parent = mainFrame
 
 local difficulties = {"Easy", "Medium", "Hard"}
 local diffButtons = {}
-local currentDifficulty = 3  -- เริ่มที่ Hard
+local currentDifficulty = 3
 
 for i, diff in ipairs(difficulties) do
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0, 120, 0, 45)
 	btn.Position = UDim2.new(0, (i-1)*130, 0, 0)
-	btn.BackgroundColor3 = (i == 3) and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(60, 60, 65)
+	
+	if diff == "Easy" then
+		btn.BackgroundColor3 = Color3.fromRGB(80, 255, 80)
+	elseif diff == "Medium" then
+		btn.BackgroundColor3 = Color3.fromRGB(255, 220, 60)
+	else
+		btn.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+	end
+	
 	btn.Text = diff
 	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	btn.TextScaled = true
@@ -73,9 +118,22 @@ for i, diff in ipairs(difficulties) do
 	btn.MouseButton1Click:Connect(function()
 		currentDifficulty = i
 		for _, b in ipairs(diffButtons) do
-			b.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+			if b.Text == "Easy" then
+				b.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+			elseif b.Text == "Medium" then
+				b.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+			else
+				b.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+			end
 		end
-		btn.BackgroundColor3 = Color3.fromRGB(80, 255, 80)
+		
+		if diff == "Easy" then
+			btn.BackgroundColor3 = Color3.fromRGB(80, 255, 80)
+		elseif diff == "Medium" then
+			btn.BackgroundColor3 = Color3.fromRGB(255, 220, 60)
+		else
+			btn.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+		end
 	end)
 	
 	table.insert(diffButtons, btn)
@@ -118,11 +176,10 @@ resetButton.Font = Enum.Font.GothamBold
 resetButton.Parent = mainFrame
 Instance.new("UICorner", resetButton).CornerRadius = UDim.new(0, 12)
 
--- Player Win Button (เพื่อนยาก)
 local playerWinButton = Instance.new("TextButton")
 playerWinButton.Size = UDim2.new(0, 150, 0, 50)
 playerWinButton.Position = UDim2.new(0.5, 10, 0, 635)
-playerWinButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)  -- สีทอง
+playerWinButton.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
 playerWinButton.Text = "🏆 Winning"
 playerWinButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 playerWinButton.TextScaled = true
@@ -182,9 +239,9 @@ local function endGame(winner)
 	gameOver = true
 	if winner == 1 then
 		statusLabel.Text = "( 🎉 Player Win! 🎉 )"
-		statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+		statusLabel.TextColor3 = Color3.fromRGB(80, 255, 100)
 	elseif winner == 2 then
-		statusLabel.Text = "( 🤖 AI Wins... )"
+		statusLabel.Text = "( 🤖 AI Is Wins... )"
 		statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 	else
 		statusLabel.Text = "( 🤝 It's a Draw! )"
@@ -314,11 +371,9 @@ for i = 1, 9 do
 end
 
 -- ================== Button Functions ==================
--- Player Win Button (เพื่อนยาก)
 playerWinButton.MouseButton1Click:Connect(function()
 	if gameOver then return end
 	
-	-- หาช่องว่างและใส่ X จนกว่าจะชนะ
 	while not checkWin(1) and not isDraw() do
 		local placed = false
 		for i = 1, 9 do
@@ -326,7 +381,6 @@ playerWinButton.MouseButton1Click:Connect(function()
 				board[i] = 1
 				updateBoardUI()
 				placed = true
-				
 				if checkWin(1) then
 					endGame(1)
 					return
@@ -337,7 +391,6 @@ playerWinButton.MouseButton1Click:Connect(function()
 		if not placed then break end
 	end
 	
-	-- ถ้ายังไม่ชนะ (เหลือช่องน้อย) ให้ใส่เพิ่มอีกจนกว่าจะชนะ
 	if not checkWin(1) then
 		for i = 1, 9 do
 			if board[i] == 0 then
